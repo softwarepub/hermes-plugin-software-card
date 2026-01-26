@@ -38,7 +38,7 @@ homepage = "https://github.com/softwarepub/hermes-plugin-software-card"
 repository = "https://github.com/softwarepub/hermes-plugin-software-card.git"
 
 [project.entry-points."hermes.curate"]
-accept = "hermes_plugin_software_card.curate:SoftwareCaRDCuratePlugin"
+software-card = "hermes_plugin_software_card.curate:SoftwareCaRDCuratePlugin"
 
 [tool.ruff.lint]
 select = [

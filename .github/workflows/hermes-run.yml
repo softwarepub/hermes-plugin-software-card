@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Helmholtz-Zentrum Dresden - Rossendorf e.V. (HZDR)
+# SPDX-FileContributor: David Pape
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Run HERMES Workflow
+run-name: HERMES run for ${{ github.actor }} on ${{ github.ref_name }}
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "latest"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Print Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install package
+        run: pip install -e .
+      - run: hermes clean
+      - run: hermes harvest
+      - run: hermes process
+      - run: hermes curate
