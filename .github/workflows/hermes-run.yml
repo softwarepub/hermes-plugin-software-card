@@ -7,11 +7,11 @@ name: Run HERMES Workflow
 run-name: HERMES run for ${{ github.actor }} on ${{ github.ref_name }}
 on: [push, pull_request]
 jobs:
-  build:
+  hermes-workflow-steps:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "latest"]
+        python-version: ["3.11", "3.14"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
