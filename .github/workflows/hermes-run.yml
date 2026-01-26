@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.14"]
+        python-version: ["3.11", "3.13"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -21,7 +21,7 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       - name: Install package
         run: pip install -e .
-      - run: hermes clean
-      - run: hermes harvest
-      - run: hermes process
-      - run: hermes curate
+      - run: hermes clean || (cat hermes.log && false)
+      - run: hermes harvest || (cat hermes.log && false)
+      - run: hermes process || (cat hermes.log && false)
+      - run: hermes curate || (cat hermes.log && false)
