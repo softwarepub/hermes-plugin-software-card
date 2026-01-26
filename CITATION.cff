@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Helmholtz-Zentrum Dresden - Rossendorf e.V. (HZDR)
+# SPDX-FileContributor: David Pape
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: hermes-plugin-software-card
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: David
+    family-names: Pape
+    email: d.pape@hzdr.de
+    affiliation: Helmholtz-Zentrum Dresden-Rossendorf (HZDR)
+    orcid: 'https://orcid.org/0000-0002-3145-9880'
