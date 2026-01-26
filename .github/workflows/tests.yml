@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2026 Helmholtz-Zentrum Dresden - Rossendorf e.V. (HZDR)
+# SPDX-FileContributor: David Pape
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Tests
+run-name: Tests for ${{ github.actor }} on ${{ github.ref_name }}
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  ruff-check-and-format-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/ruff-action@v3
+      - run: ruff check
+      - run: ruff format --check --diff
+  reuse-compliance-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: fsfe/reuse-action@v6
