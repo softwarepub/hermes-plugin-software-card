@@ -2,3 +2,5 @@
 # SPDX-FileContributor: David Pape
 #
 # SPDX-License-Identifier: Apache-2.0
+
+"""HERMES plugins for the Software CaRD framework."""
