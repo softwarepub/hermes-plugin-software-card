@@ -3,13 +3,26 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-"""Classes to get information about the execution environment."""
+"""Extensible environment detection.
+
+Functions and classes to get information about the execution environment of HERMES and
+the Software CaRD curation plugin.
+
+This plugin supports GitHub Actions (``GitHubActionsEnvironment``) and GitLab CI
+(``GitLabCIEnvironment``) out of the box. Support for other environments may be added by
+subclassing ``Environment`` and registering the new class in the Python entry point
+``software_card.environment``. Subclasses must make sure that ``.from_env()``
+returns ``None`` when HERMES is not running in their associated environment.
+"""
 
 import os
 from dataclasses import dataclass, fields
 from datetime import datetime
+from importlib import metadata
 from typing import Self
 from urllib.parse import urlencode
+
+_ENTRY_POINT_GROUP = "software_card.environment"
 
 
 @dataclass(kw_only=True)
@@ -18,10 +31,7 @@ class Environment:
 
     @classmethod
     def from_env(cls) -> Self | None:
-        """Create object from environment variables.
-
-        If not running in GitHub Actions, ``None`` is returned instead.
-        """
+        """Create object from environment variables."""
         env = dict(os.environ)
         data = {}
         for field in fields(cls):
@@ -180,16 +190,39 @@ class GitHubActionsEnvironment(Environment):
         }
 
 
+def _get_environment_classes() -> dict[str, type]:
+    entry_points = {}
+    for entry_point in metadata.entry_points(group=_ENTRY_POINT_GROUP):
+        name = entry_point.name
+        class_ = entry_point.load()
+        if not isinstance(class_, type) or not issubclass(class_, Environment):
+            message = (
+                f"Entrypoint '{_ENTRY_POINT_GROUP}'.'{name}' "
+                f"must be a subclass of '{Environment.__name__}'"
+            )
+            raise TypeError(message)
+        entry_points[name] = class_
+    return entry_points
+
+
 def get() -> Environment | None:
     """Return the CI environment that we are running in, or ``None``."""
-    github_actions = GitHubActionsEnvironment.from_env()
-    gitlab_ci = GitLabCIEnvironment.from_env()
+    environment_classes = _get_environment_classes()
+    environments = {
+        name: environment_class.from_env()
+        for name, environment_class in environment_classes.items()
+    }
 
-    if github_actions is not None and gitlab_ci is not None:
-        message = "More than one CI environment detected"
+    num_found_environments = sum(map(bool, environments.values()))
+    if num_found_environments > 1:
+        names = [name for name in environments if environments.get(name) is not None]
+        message = f"Multiple CI environments detected: {', '.join(names)}"
         raise RuntimeError(message)
 
-    return github_actions or gitlab_ci
+    if num_found_environments == 0:
+        return None
+
+    return next(env for env in environments.values() if env is not None)
 
 
 def format_app_url(base_url: str, environment: Environment) -> str:

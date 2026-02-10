@@ -32,12 +32,18 @@ dependencies = [
     "software-card-policies @ git+https://github.com/softwarepub/software-card-policies.git",
 ]
 
-[project.urls]
-homepage = "https://github.com/softwarepub/hermes-plugin-software-card"
-repository = "https://github.com/softwarepub/hermes-plugin-software-card.git"
+[project.entry-points]
 
 [project.entry-points."hermes.curate"]
 software_card = "hermes_plugin_software_card.curate:SoftwareCaRDCuratePlugin"
+
+[project.entry-points."software_card.environment"]
+github = "hermes_plugin_software_card.environment:GitHubActionsEnvironment"
+gitlab = "hermes_plugin_software_card.environment:GitLabCIEnvironment"
+
+[project.urls]
+homepage = "https://github.com/softwarepub/hermes-plugin-software-card"
+repository = "https://github.com/softwarepub/hermes-plugin-software-card.git"
 
 [tool.ruff.lint]
 select = [
