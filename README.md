@@ -16,3 +16,10 @@ python3.11 -m venv venv
 source venv/bin/activate
 python -m pip install -e .
 ```
+
+For testing of CI environments (on Linux), source one of these files:
+
+```bash
+source env-github.sh
+source env-gitlab.sh
+```
