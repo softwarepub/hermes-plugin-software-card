@@ -26,7 +26,7 @@ class Environment:
         data = {}
         for field in fields(cls):
             key = field.name.casefold()
-            lookup_key = field.name.capitalize()
+            lookup_key = field.name.upper()
             value = env.get(lookup_key)
             type_ = field.type
 
