@@ -58,7 +58,7 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         else:
             print(
                 "Find the Software CaRD user interface at:",
-                environment.format_app_url("https://example.com", environment),
+                environment.format_app_url("https://example.com", self._environment),
             )
 
     def is_publication_approved(self) -> bool:

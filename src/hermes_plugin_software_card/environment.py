@@ -111,7 +111,7 @@ class GitLabCIEnvironment(Environment):
 
         return super().from_env()
 
-    def url_data(self):
+    def url_data(self) -> dict[str, str]:
         """Return the data to be passed to the Software CaRD user interface."""
         return {
             "gitlab_ci_server": self.ci_server_url,
@@ -165,7 +165,7 @@ class GitHubActionsEnvironment(Environment):
 
         return super().from_env()
 
-    def url_data(self):
+    def url_data(self) -> dict[str, str]:
         """Return the data to be passed to the Software CaRD user interface."""
         return {
             "github_ci_server": self.github_server_url,
