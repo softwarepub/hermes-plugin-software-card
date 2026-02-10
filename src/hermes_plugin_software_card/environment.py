@@ -26,8 +26,13 @@ class Environment:
         data = {}
         for field in fields(cls):
             key = field.name.casefold()
-            value = env.get(field.name)
+            lookup_key = field.name.capitalize()
+            value = env.get(lookup_key)
             type_ = field.type
+
+            if value is None:
+                message = f"No value for '{lookup_key}' found in environment"
+                raise RuntimeError(message)
 
             if type_ is str:
                 pass
