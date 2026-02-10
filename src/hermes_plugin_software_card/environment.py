@@ -47,6 +47,7 @@ class Environment:
         return {}
 
 
+@dataclass(kw_only=True)
 class GitLabCIEnvironment(Environment):
     """Environment variables in the GitLab CI environment.
 
@@ -119,6 +120,7 @@ class GitLabCIEnvironment(Environment):
         }
 
 
+@dataclass(kw_only=True)
 class GitHubActionsEnvironment(Environment):
     """Environment variables in the GitHub Actions environment.
 
