@@ -17,6 +17,8 @@ from software_card_policies.data_model import (
 )
 from software_card_policies.report import create_report
 
+from hermes_plugin_software_card import environment
+
 
 class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
     """Software CaRD curation plugin."""
@@ -29,6 +31,8 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         self._conforms = False
         self._validation_graph = None
         self._report = None
+
+        self._environment = environment.get()
 
     def prepare(self):
         """Prepare the validation.
@@ -49,6 +53,13 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
     def create_report(self):
         """Create basic text report."""
         self._report = create_report(self._validation_graph)
+        if self._environment is None:
+            print("Software CaRD plugin not running in CI environment.")
+        else:
+            print(
+                "Find the Software CaRD user interface at:",
+                environment.format_app_url("https://example.com", environment),
+            )
 
     def is_publication_approved(self) -> bool:
         """Decide whether the publication of the software is approved."""
