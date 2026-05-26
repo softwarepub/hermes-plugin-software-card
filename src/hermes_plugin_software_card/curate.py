@@ -32,8 +32,41 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         self._validation_graph = None
         self._report = None
 
-        self._app_base_url = "https://software-metadata.pub/software-card/"
+
         self._environment = environment.get()
+        # TODO: Configure via hermes.toml
+        self._app_base_url = "https://software-metadata.pub/software-card/"
+        # TODO: Configure via hermes.toml
+        self._validation_config = {
+            "policies": {
+                "authors": {
+                    "source": (
+                        "https://software-metadata.pub/software-card-policies/"
+                        "example-policies/policies/authors-affiliation.ttl"
+                    ),
+                },
+                "description": {
+                    "parameters": {"description_min_length": 10},
+                    "source": (
+                        "https://software-metadata.pub/software-card-policies/"
+                        "example-policies/policies/description-parameterizable.ttl"
+                    ),
+                },
+                "licenses": {
+                    "parameters": {
+                        "suggested_licenses": [
+                            "https://spdx.org/licenses/MIT",
+                            "https://spdx.org/licenses/Apache-2.0",
+                            "https://spdx.org/licenses/GPL-3.0-or-later",
+                        ]
+                    },
+                    "source": (
+                        "https://software-metadata.pub/software-card-policies/"
+                        "example-policies/policies/licenses-parameterizable.ttl"
+                    ),
+                },
+            }
+        }
 
     def prepare(self):
         """Prepare the validation.
@@ -43,7 +76,7 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         """
         text = json.dumps(self.ctx.get_data()["curate"])
         self._data_graph = read_rdf_resource(format="json-ld", data=text)
-        self._shacl_graph = make_shacl_graph(Config.from_dict({"policies": {}}))
+        self._shacl_graph = make_shacl_graph(Config.from_dict(self._validation_config))
 
     def validate(self):
         """Run Software CaRD validation."""
