@@ -32,7 +32,6 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         self._validation_graph = None
         self._report = None
 
-
         self._environment = environment.get()
         # TODO: Configure via hermes.toml
         self._app_base_url = "https://software-metadata.pub/software-card/"
