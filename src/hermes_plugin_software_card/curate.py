@@ -68,8 +68,8 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
     def prepare(self):
         """Prepare the validation.
 
-        The metadata given in the context is parsed as an RDF graph. The configuration
-        for the Software CaRD validation process is left empty.
+        The metadata given in the context is parsed as an RDF graph and then validated
+        using the Software CaRD validation.
         """
         text = json.dumps(self.ctx.get_data()["curate"])
         self._data_graph = read_rdf_resource(format="json-ld", data=text)
