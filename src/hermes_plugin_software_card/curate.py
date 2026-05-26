@@ -32,6 +32,7 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         self._validation_graph = None
         self._report = None
 
+        self._app_base_url = "https://software-metadata.pub/software-card/"
         self._environment = environment.get()
 
     def prepare(self):
@@ -58,7 +59,7 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         else:
             print(
                 "Find the Software CaRD user interface at:",
-                environment.format_app_url("https://example.com", self._environment),
+                environment.format_app_url(self._app_base_url, self._environment),
             )
 
     def is_publication_approved(self) -> bool:
