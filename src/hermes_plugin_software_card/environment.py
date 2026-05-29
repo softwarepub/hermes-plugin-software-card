@@ -110,10 +110,24 @@ class GitLabCIEnvironment(Environment):
     ci_server_url: str  # e.g. "https://codebase.helmholtz.cloud"
     ci_server_version: str  # e.g. "18.7.2"
 
+    ci_api_v4_url: str
+
     gitlab_user_email: str  # full email address
     gitlab_user_id: int
     gitlab_user_login: str  # username
     gitlab_user_name: str  # display name
+
+    @property
+    def ci_job_artifact_url(self):
+        """The URL from which to download artifacts from this job.
+
+        More information:
+        https://docs.gitlab.com/api/job_artifacts/#download-job-artifacts-by-job-id
+        """
+        return (
+            f"{self.ci_api_v4_url}/projects/{self.ci_project_id}/"
+            f"jobs/{self.ci_job_id}/artifacts"
+        )
 
     @classmethod
     def from_env(cls) -> Self | None:
@@ -132,6 +146,7 @@ class GitLabCIEnvironment(Environment):
         return {
             "gitlab_ci_server": self.ci_server_url,
             "gitlab_ci_job": self.ci_job_url,
+            "gitlab_job_artifact_url": self.ci_job_artifact_url,
         }
 
 
