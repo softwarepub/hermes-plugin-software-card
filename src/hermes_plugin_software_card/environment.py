@@ -202,6 +202,8 @@ class GitHubActionsEnvironment(Environment):
         return {
             "github_ci_server": self.github_server_url,
             "github_ci_job": self.github_run_id,
+            "github_repository_owner": self.github_repository_owner,
+            "github_repository": self.github_repository,
         }
 
 
