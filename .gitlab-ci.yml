@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2026 Helmholtz-Zentrum Dresden - Rossendorf e.V. (HZDR)
+# SPDX-FileContributor: David Pape
+#
+# SPDX-License-Identifier: CC0-1.0
+
+stages:
+  - test
+
+hermes-workflow-steps:
+  stage: test
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.11", "3.13"]
+  image: "python:${PYTHON_VERSION}"
+  before_script:
+    - python -c "import sys; print(sys.version)"
+    - python -m pip install -e .
+  script:
+    - hermes clean || (cat hermes.log && exit 1)
+    - hermes harvest || (cat hermes.log && exit 1)
+    - hermes process || (cat hermes.log && exit 1)
+    - hermes curate || (cat hermes.log && exit 1)
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"
