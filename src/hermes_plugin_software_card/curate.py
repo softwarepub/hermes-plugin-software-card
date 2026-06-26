@@ -74,8 +74,8 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
 
         This method runs the main logic of the plugin. It calls the other methods of the
         object in the correct order. Depending on the result of
-        ``is_publication_approved`` the corresponding ``process_decision_*()`` method is
-        called, based on the curation decision.
+        ``is_publication_approved`` either the valid metadata or a new, empty
+        ``SoftwareMetadata`` object is returned.
         """
         self.prepare(metadata)
         self.validate()
