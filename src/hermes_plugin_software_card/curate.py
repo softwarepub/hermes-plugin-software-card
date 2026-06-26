@@ -6,9 +6,11 @@
 """Module containing the Software CaRD curation plugin for HERMES."""
 
 import json
-from pathlib import Path
 
-from hermes.commands.curate.base import BaseCuratePlugin
+from hermes.commands.base import HermesCommand
+from hermes.commands.curate.base import HermesCuratePlugin
+from hermes.model import SoftwareMetadata
+from hermes.model.hermes_cache import HermesCacheManager
 from software_card_policies.config import Config
 from software_card_policies.data_model import (
     make_shacl_graph,
@@ -20,12 +22,12 @@ from software_card_policies.report import create_report
 from hermes_plugin_software_card import environment
 
 
-class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
+class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
     """Software CaRD curation plugin."""
 
-    def __init__(self, command, ctx):
+    def __init__(self):
         """Initialize the plugin."""
-        super().__init__(command, ctx)
+        super().__init__()
         self._data_graph = None
         self._shacl_graph = None
         self._conforms = False
@@ -65,14 +67,34 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
             }
         }
 
-    def prepare(self):
+    def __call__(
+        self, command: HermesCommand, metadata: SoftwareMetadata
+    ) -> SoftwareMetadata:
+        """Entry point of the callable.
+
+        This method runs the main logic of the plugin. It calls the other methods of the
+        object in the correct order. Depending on the result of
+        ``is_publication_approved`` the corresponding ``process_decision_*()`` method is
+        called, based on the curation decision.
+        """
+        self.prepare(metadata)
+        self.validate()
+        self.create_report(metadata)
+
+        if not self.is_publication_approved():
+            return SoftwareMetadata()
+
+        return metadata
+
+    def prepare(self, metadata: SoftwareMetadata):
         """Prepare the validation.
 
         The metadata given in the context is parsed as an RDF graph and then validated
         using the Software CaRD validation.
         """
-        text = json.dumps(self.ctx.get_data()["curate"])
-        self._data_graph = read_rdf_resource(format="json-ld", data=text)
+        self._data_graph = read_rdf_resource(
+            format="json-ld", data=json.dumps(metadata.ld_value)
+        )
         self._shacl_graph = make_shacl_graph(Config.from_dict(self._validation_config))
 
     def validate(self):
@@ -81,8 +103,17 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
         self._conforms = conforms
         self._validation_graph = validation_graph
 
-    def create_report(self):
-        """Create basic text report."""
+    def create_report(self, metadata: SoftwareMetadata):
+        """Create validation report.
+
+        This creates the report both as a machine-readble JSON-LD file, and prints the
+        URL to the Software CaRD web app to the screen.
+        """
+        ctx = HermesCacheManager()
+        validation_file = ctx.cache_dir / "curate" / "validation.json"
+        validation_file.parent.mkdir(exist_ok=True, parents=True)
+        self._validation_graph.serialize(validation_file, format="json-ld")
+
         self._report = create_report(self._validation_graph)
         if self._environment is None:
             print("Software CaRD plugin not running in CI environment.")
@@ -95,10 +126,3 @@ class SoftwareCaRDCuratePlugin(BaseCuratePlugin):
     def is_publication_approved(self) -> bool:
         """Decide whether the publication of the software is approved."""
         return self._conforms
-
-    def process_decision_positive(self):
-        """Write the given metadata into the curate directory."""
-        curate_output = Path(self.ctx.get_cache("curate", self.ctx.hermes_name))
-        Path.mkdir(curate_output.parent)
-        with open(curate_output, "w") as curate_output_fh:
-            json.dump(self.ctx.get_data(), curate_output_fh)
