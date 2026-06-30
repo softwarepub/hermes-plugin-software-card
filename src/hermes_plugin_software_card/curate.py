@@ -66,7 +66,9 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         }
 
     def __call__(
-        self, command: HermesCurateCommand, metadata: SoftwareMetadata
+        self,
+        command: HermesCurateCommand,  # noqa: ARG002
+        metadata: SoftwareMetadata,
     ) -> SoftwareMetadata:
         """Entry point of the callable.
 
