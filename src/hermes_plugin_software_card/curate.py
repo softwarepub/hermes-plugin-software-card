@@ -79,7 +79,7 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         """
         self.prepare(metadata)
         self.validate()
-        self.create_report(metadata)
+        self.create_report()
 
         if not self.is_publication_approved():
             return SoftwareMetadata()
