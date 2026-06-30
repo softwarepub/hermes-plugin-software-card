@@ -89,8 +89,7 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
     def prepare(self, metadata: SoftwareMetadata):
         """Prepare the validation.
 
-        The metadata given in the context is parsed as an RDF graph and then validated
-        using the Software CaRD validation.
+        The metadata given in ``metadata`` is parsed as an RDF graph for validation.
         """
         self._data_graph = read_rdf_resource(
             format="json-ld", data=json.dumps(metadata.ld_value)
@@ -98,7 +97,7 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         self._shacl_graph = make_shacl_graph(Config.from_dict(self._validation_config))
 
     def validate(self):
-        """Run Software CaRD validation."""
+        """Run Software CaRD validation on the given software metadata."""
         conforms, validation_graph = validate_graph(self._data_graph, self._shacl_graph)
         self._conforms = conforms
         self._validation_graph = validation_graph
@@ -106,8 +105,8 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
     def create_report(self):
         """Create validation report.
 
-        This creates the report both as a machine-readble JSON-LD file, and prints the
-        URL to the Software CaRD web app to the screen.
+        This creates the report both as a machine-readble JSON-LD file, and prints a
+        human-readable report, and the URL to the Software CaRD web app to the screen.
         """
         ctx = HermesCacheManager()
         validation_file = ctx.cache_dir / "curate" / "validation.json"
