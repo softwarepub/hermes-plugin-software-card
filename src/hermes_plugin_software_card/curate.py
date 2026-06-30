@@ -7,8 +7,7 @@
 
 import json
 
-from hermes.commands.base import HermesCommand
-from hermes.commands.curate.base import HermesCuratePlugin
+from hermes.commands.curate.base import HermesCurateCommand, HermesCuratePlugin
 from hermes.model import SoftwareMetadata
 from hermes.model.hermes_cache import HermesCacheManager
 from software_card_policies.config import Config
@@ -32,7 +31,6 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         self._shacl_graph = None
         self._conforms = False
         self._validation_graph = None
-        self._report = None
 
         self._environment = environment.get()
         self._app_base_url = "https://software-metadata.pub/software-card/"
@@ -68,7 +66,7 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         }
 
     def __call__(
-        self, command: HermesCommand, metadata: SoftwareMetadata
+        self, command: HermesCurateCommand, metadata: SoftwareMetadata
     ) -> SoftwareMetadata:
         """Entry point of the callable.
 
@@ -103,7 +101,7 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         self._conforms = conforms
         self._validation_graph = validation_graph
 
-    def create_report(self, metadata: SoftwareMetadata):
+    def create_report(self):
         """Create validation report.
 
         This creates the report both as a machine-readble JSON-LD file, and prints the
@@ -114,7 +112,7 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         validation_file.parent.mkdir(exist_ok=True, parents=True)
         self._validation_graph.serialize(validation_file, format="json-ld")
 
-        self._report = create_report(self._validation_graph)
+        print(create_report(self._validation_graph), end="\n\n")
         if self._environment is None:
             print("Software CaRD plugin not running in CI environment.")
         else:
