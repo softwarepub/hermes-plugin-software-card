@@ -6,6 +6,7 @@
 """Module containing the Software CaRD curation plugin for HERMES."""
 
 import json
+from io import StringIO
 
 from hermes.commands.curate.base import HermesCurateCommand, HermesCuratePlugin
 from hermes.model import SoftwareMetadata
@@ -109,9 +110,13 @@ class SoftwareCaRDCuratePlugin(HermesCuratePlugin):
         human-readable report, and the URL to the Software CaRD web app to the screen.
         """
         ctx = HermesCacheManager()
-        validation_file = ctx.cache_dir / "curate" / "validation.json"
-        validation_file.parent.mkdir(exist_ok=True, parents=True)
-        self._validation_graph.serialize(validation_file, format="json-ld")
+        ctx.prepare_step("curate")
+        with ctx["result"] as cache:
+            graph_io = StringIO()
+            self._validation_graph.print(format="json-ld", out=graph_io)
+            cache["validation"] = json.loads(graph_io.getvalue())
+            graph_io.close()
+        ctx.finalize_step("curate")
 
         print(create_report(self._validation_graph), end="\n\n")
         if self._environment is None:
