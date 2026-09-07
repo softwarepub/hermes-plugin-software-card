@@ -9,6 +9,19 @@ SPDX-License-Identifier: CC-BY-4.0
 
 HERMES curation plugin using the Software CaRD framework.
 
+Install it:
+
+``` bash
+pip install git+https://github.com/softwarepub/hermes-plugin-software-card.git
+```
+
+Configure it in `hermes.toml`:
+
+``` toml
+[curate]
+plugin = "software_card"
+```
+
 ## Development
 
 ```bash
