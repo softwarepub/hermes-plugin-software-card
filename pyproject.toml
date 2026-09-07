@@ -28,7 +28,7 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "hermes @ git+https://github.com/softwarepub/hermes.git@refactor/data-model",
+    "hermes >= 0.10.0",
     "software-card-policies @ git+https://github.com/softwarepub/software-card-policies.git",
 ]
 
